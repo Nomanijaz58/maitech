@@ -1,0 +1,26 @@
+name: Restrict PRs to main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  restrict-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source branch
+        run: |
+          SOURCE="${{ github.head_ref }}"
+          echo "PR source branch: $SOURCE"
+
+          if [[ "$SOURCE" == "staging" ]]; then
+            echo "Allowed: staging → main"
+            exit 0
+          elif [[ "$SOURCE" == hotfix:* ]]; then
+            echo "Allowed: hotfix:* → main"
+            exit 0
+          else
+            echo "PRs to main are only allowed from 'staging' or 'hotfix:*' branches."
+            exit 1
+          fi
