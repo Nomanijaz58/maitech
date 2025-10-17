@@ -3,12 +3,12 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jwt import PyJWKClient
 
-from app.core.config import settings
+from app.core.config import configurations
 from app.db.documents.user import User
 
-COGNITO_REGION = settings.COGNITO_REGION
-COGNITO_USER_POOL_ID = settings.COGNITO_USER_POOL_ID
-COGNITO_CLIENT_ID = settings.COGNITO_CLIENT_ID
+COGNITO_REGION = configurations.COGNITO_REGION
+COGNITO_USER_POOL_ID = configurations.COGNITO_USER_POOL_ID
+COGNITO_CLIENT_ID = configurations.COGNITO_CLIENT_ID
 JWKS_URL = f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL_ID}/.well-known/jwks.json"
 
 security = HTTPBearer()

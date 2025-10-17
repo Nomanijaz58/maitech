@@ -1,54 +1,17 @@
-from fastapi_mail import ConnectionConfig
-from fastapi_mail import FastMail, MessageSchema, MessageType
-from app.core.config import settings
+import sendgrid
+from sendgrid.helpers.mail import Email, To, Content, Mail
+from app.core.config import configurations
 
-mail_conf = ConnectionConfig(
-    MAIL_USERNAME=settings.MAIL_USERNAME,
-    MAIL_PASSWORD=settings.MAIL_PASSWORD,
-    MAIL_PORT=settings.MAIL_PORT,
-    MAIL_SERVER=settings.MAIL_SERVER,
-    MAIL_STARTTLS=settings.MAIL_STARTTLS,
-    MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
-
-    MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
-    MAIL_FROM=settings.MAIL_FROM
-)
-fm = FastMail(mail_conf)
+sg = sendgrid.SendGridAPIClient(api_key=configurations.SENDGRID_API_KEY)
 
 
-async def send_html_mail(subject: str, html_str: str, recipients: list[str]):
-    """
-    Sends an HTML email to the given list of recipients.
+def send_grid_mail_send(subject, to_email, content, mime_type="plain"):
+    # mime_types: "text/plain" or "text/html" or "text/x-amp-html"
+    to_email = To(to_email)
+    from_email = Email(configurations.MAIL_FROM)
+    content = Content(f"text/{mime_type}", content)
+    mail = Mail(from_email, to_email, subject, content)
 
-    Parameters:
-    - html_str: str — The HTML content of the email
-    - subject: str — The subject of the email
-    - recipients: list[str] — List of email addresses
-    """
-    message = MessageSchema(
-        subject=subject,
-        recipients=recipients,  # noqa
-        body=html_str,
-        subtype=MessageType.html,
-    )
-
-    await fm.send_message(message)
-
-
-async def send_text_mail(subject: str, body: str, recipients: list[str]):
-    """
-    Sends a plain text email to the given list of recipients.
-
-    Parameters:
-    - body: str — The plain text content of the email
-    - subject: str — The subject of the email
-    - recipients: list[str] — List of email addresses
-    """
-    message = MessageSchema(
-        subject=subject,
-        recipients=recipients,  # noqa
-        body=body,
-        subtype=MessageType.plain,
-    )
-
-    await fm.send_message(message)
+    response = sg.client.mail.send.post(request_body=mail.get())
+    if int(response.status_code) != 202:
+        raise Exception("send_grid_mail_send failed to send email")
