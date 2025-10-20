@@ -3,11 +3,22 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import configurations
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
+from app.db.documents.user import User
+from app.api.routes.auth import router as auth_router
+from fastapi import APIRouter
+
+
+async def init_db():
+    client = AsyncIOMotorClient(configurations.MONGODB_URL)
+    db = client.get_default_database()
+    await init_beanie(database=db, document_models=[User])
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # await init_db()
+    await init_db()
     print("Starting up")
     yield
     print("Shutting down")
@@ -19,7 +30,7 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     title="MaiTech API",
     version="1.0.0",
-    description="API for MaiTech",
+    description="Backend API for MaiTech platform with Cognito-based authentication and MongoDB (Beanie).",
     lifespan=lifespan
 )
 
@@ -31,6 +42,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(auth_router)
+
+@app.get("/api/health")
+async def health():
+    return {"status": "ok"}
+
+@app.get("/api/config-check")
+async def config_check():
+    return {
+        "region": configurations.COGNITO_REGION,
+        "user_pool_id": configurations.COGNITO_USER_POOL_ID,
+        "client_id": configurations.COGNITO_CLIENT_ID,
+    }
 
 @app.get("/api")
 async def root():

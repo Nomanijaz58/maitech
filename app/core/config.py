@@ -14,6 +14,11 @@ class Settings(BaseSettings):
 
     # ADMIN_EMAIL: str = config("ADMIN_EMAIL")
 
+    # AWS credentials (optional locally if using IAM role)
+    AWS_REGION: str = config("AWS_REGION", default="")
+    AWS_ACCESS_KEY_ID: str = config("AWS_ACCESS_KEY_ID", default="")
+    AWS_SECRET_ACCESS_KEY: str = config("AWS_SECRET_ACCESS_KEY", default="")
+    # Cognito required settings
     COGNITO_REGION: str = config("COGNITO_REGION")
     COGNITO_USER_POOL_ID: str = config("COGNITO_USER_POOL_ID")
     COGNITO_CLIENT_ID: str = config("COGNITO_CLIENT_ID")
@@ -26,5 +31,21 @@ class Settings(BaseSettings):
     class Config:
         extra = "ignore"
 
+    def validate_required(self) -> None:
+        missing = []
+        if not self.MONGODB_URL:
+            missing.append("MONGODB_URL")
+        if not self.COGNITO_REGION:
+            missing.append("COGNITO_REGION")
+        if not self.COGNITO_USER_POOL_ID:
+            missing.append("COGNITO_USER_POOL_ID")
+        if not self.COGNITO_CLIENT_ID:
+            missing.append("COGNITO_CLIENT_ID")
+        # Access keys are optional if using IAM role/environment provider
+        if missing:
+            keys = ", ".join(missing)
+            raise RuntimeError(f"Missing required environment variables: {keys}")
+
 
 configurations = Settings()
+configurations.validate_required()
