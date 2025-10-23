@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 import asyncio
-from beanie import PydanticObjectId
 from app.core.cognito import sign_up, confirm_sign_up, login
 from app.schemas.user_schemas import RegisterRequest, ConfirmUserRequest, LoginRequest
 from app.db.documents.user import User
+from app.db.database import db_service
 
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -17,11 +17,13 @@ async def register(payload: RegisterRequest):
     except ValueError as e:
         return {"status": "error", "detail": str(e)}
 
-    # 2) Persist in MongoDB (Beanie)
-    user = await User.find_one(User.email == payload.email)
+    # 2) Persist in MongoDB using pymongo
+    user = await db_service.find_user_by_email(payload.email)
     if user is None:
         user = User(email=payload.email, full_name=payload.name, role=payload.role)
-        await user.insert()
+        created_user = await db_service.create_user(user)
+        if not created_user:
+            return {"status": "error", "detail": "Failed to create user in database"}
 
     return {"status": "success", "message": "User registered. Please check your email for the confirmation code."}
 
@@ -41,8 +43,8 @@ async def login_user(payload: LoginRequest):
         # Authenticate with Cognito
         auth_result = await asyncio.to_thread(login, payload.email, payload.password)
         
-        # Get user from MongoDB
-        user = await User.find_one(User.email == payload.email)
+        # Get user from MongoDB using pymongo
+        user = await db_service.find_user_by_email(payload.email)
         if not user:
             return {"status": "error", "detail": "User not found in database"}
         

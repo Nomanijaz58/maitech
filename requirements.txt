@@ -1,8 +1,7 @@
 fastapi[all]==0.116.1
 uvicorn==0.35.0
 python-decouple==3.8
-beanie==2.0.0
 pydantic[email]==2.11.7
 boto3==1.35.43
-motor==3.7.0
+pymongo==4.14.0
 sendgrid==6.12.4

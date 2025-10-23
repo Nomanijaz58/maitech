@@ -1,8 +1,8 @@
-from beanie import Document
-from pydantic import EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime, timezone
 from typing import Optional
 from enum import Enum
+from bson import ObjectId
 
 
 def utc_now():
@@ -15,11 +15,14 @@ class UserRole(str, Enum):
     admin = "admin"
 
 
-class User(Document):
+class User(BaseModel):
+    id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="_id")
     email: EmailStr
     full_name: Optional[str] = None
     role: UserRole = Field(default=UserRole.customer)
     created_at: datetime = Field(default_factory=utc_now)
 
-    class Settings:
-        name = "users"
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}

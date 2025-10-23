@@ -3,24 +3,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import configurations
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-from app.db.documents.user import User
+from app.db.database import db_service
 from app.api.routes.auth import router as auth_router
 from fastapi import APIRouter
 
 
-async def init_db():
-    client = AsyncIOMotorClient(configurations.MONGODB_URL)
-    db = client.get_default_database()
-    await init_beanie(database=db, document_models=[User])
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    # Connect to MongoDB using pymongo
+    await db_service.connect()
     print("Starting up")
     yield
+    # Disconnect from MongoDB
+    await db_service.disconnect()
     print("Shutting down")
 
 
