@@ -45,8 +45,25 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+async def root_redirect():
+    return {
+        "message": "Welcome to MaiTech API",
+        "docs": "Visit /api/docs for API documentation",
+        "health": "Visit /api/health for health check",
+        "endpoints": {
+            "health": "/api/health",
+            "docs": "/api/docs",
+            "auth": {
+                "register": "/api/auth/register",
+                "confirm": "/api/auth/confirm", 
+                "login": "/api/auth/login"
+            }
+        }
+    }
+
 @app.get("/api")
-async def root():
+async def api_root():
     return {"message": "Welcome to MaiTech API"}
 
 
