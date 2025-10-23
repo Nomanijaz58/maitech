@@ -52,7 +52,7 @@ async def health():
 
 @app.get("/api")
 async def root():
-    return {"message": "Welcome to GiF (Growing is Fun) API"}
+    return {"message": "Welcome to MaiTech API"}
 
 
 if __name__ == "__main__":
