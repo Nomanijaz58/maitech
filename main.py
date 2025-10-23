@@ -25,7 +25,7 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     title="MaiTech API",
     version="1.0.0",
-    description="Backend API for MaiTech platform with Cognito-based authentication and MongoDB (Beanie).",
+    description="Backend API for MaiTech platform with Cognito-based authentication and MongoDB.",
     lifespan=lifespan
 )
 
