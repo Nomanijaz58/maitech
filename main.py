@@ -49,13 +49,6 @@ app.include_router(auth_router)
 async def health():
     return {"status": "ok"}
 
-@app.get("/api/config-check")
-async def config_check():
-    return {
-        "region": configurations.COGNITO_REGION,
-        "user_pool_id": configurations.COGNITO_USER_POOL_ID,
-        "client_id": configurations.COGNITO_CLIENT_ID,
-    }
 
 @app.get("/api")
 async def root():

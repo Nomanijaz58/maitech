@@ -32,7 +32,10 @@ def sign_up(email: str, password: str, name: Optional[str] = None) -> Dict[str, 
         response = client.sign_up(**params)
         return response
     except ClientError as e:
-        raise ValueError(e.response.get("Error", {}).get("Message", str(e)))
+        error_message = e.response.get("Error", {}).get("Message", str(e))
+        raise ValueError(f"Cognito sign_up failed: {error_message}")
+    except Exception as e:
+        raise ValueError(f"Unexpected error during sign_up: {str(e)}")
 
 
 def confirm_sign_up(email: str, code: str) -> Dict[str, Any]:
@@ -45,6 +48,28 @@ def confirm_sign_up(email: str, code: str) -> Dict[str, Any]:
         )
         return response
     except ClientError as e:
-        raise ValueError(e.response.get("Error", {}).get("Message", str(e)))
+        error_message = e.response.get("Error", {}).get("Message", str(e))
+        raise ValueError(f"Cognito confirm_sign_up failed: {error_message}")
+    except Exception as e:
+        raise ValueError(f"Unexpected error during confirm_sign_up: {str(e)}")
+
+
+def login(email: str, password: str) -> Dict[str, Any]:
+    client = _get_cognito_client()
+    try:
+        response = client.initiate_auth(
+            ClientId=configurations.COGNITO_CLIENT_ID,
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={
+                "USERNAME": email,
+                "PASSWORD": password,
+            },
+        )
+        return response
+    except ClientError as e:
+        error_message = e.response.get("Error", {}).get("Message", str(e))
+        raise ValueError(f"Cognito login failed: {error_message}")
+    except Exception as e:
+        raise ValueError(f"Unexpected error during login: {str(e)}")
 
 

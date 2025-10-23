@@ -15,3 +15,8 @@ class ConfirmUserRequest(BaseModel):
     code: str = Field(min_length=4, max_length=10)
 
 
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1)
+
+

@@ -5,3 +5,4 @@ beanie==2.0.0
 pydantic[email]==2.11.7
 boto3==1.35.43
 motor==3.7.0
+sendgrid==6.12.4
