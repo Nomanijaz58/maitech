@@ -18,10 +18,10 @@ async def register(payload: RegisterRequest):
         return {"status": "error", "detail": str(e)}
 
     # 2) Persist in MongoDB using pymongo
-    user = await db_service.find_user_by_email(payload.email)
+    user = await asyncio.to_thread(db_service.find_user_by_email, payload.email)
     if user is None:
         user = User(email=payload.email, full_name=payload.name, role=payload.role)
-        created_user = await db_service.create_user(user)
+        created_user = await asyncio.to_thread(db_service.create_user, user)
         if not created_user:
             return {"status": "error", "detail": "Failed to create user in database"}
 
@@ -44,7 +44,7 @@ async def login_user(payload: LoginRequest):
         auth_result = await asyncio.to_thread(login, payload.email, payload.password)
         
         # Get user from MongoDB using pymongo
-        user = await db_service.find_user_by_email(payload.email)
+        user = await asyncio.to_thread(db_service.find_user_by_email, payload.email)
         if not user:
             return {"status": "error", "detail": "User not found in database"}
         

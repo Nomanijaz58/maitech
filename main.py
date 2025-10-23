@@ -10,12 +10,12 @@ from fastapi import APIRouter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connect to MongoDB using pymongo
-    await db_service.connect()
+    # Connect to MongoDB using pymongo (synchronous operation)
+    db_service.connect()
     print("Starting up")
     yield
-    # Disconnect from MongoDB
-    await db_service.disconnect()
+    # Disconnect from MongoDB (synchronous operation)
+    db_service.disconnect()
     print("Shutting down")
 
 
