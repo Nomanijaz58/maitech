@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import configurations
 from app.db.database import db_service
 from app.api.routes.auth import router as auth_router
+from app.api.routes.user_routes import router as user_router
 from fastapi import APIRouter
 
 
@@ -39,6 +40,7 @@ app.add_middleware(
 
 
 app.include_router(auth_router)
+app.include_router(user_router)
 
 @app.get("/api/health")
 async def health():
@@ -58,6 +60,11 @@ async def root_redirect():
                 "register": "/api/auth/register",
                 "confirm": "/api/auth/confirm", 
                 "login": "/api/auth/login"
+            },
+            "users": {
+                "create": "/api/users/",
+                "get_all": "/api/users/",
+                "get_by_id": "/api/users/{user_id}"
             }
         }
     }
