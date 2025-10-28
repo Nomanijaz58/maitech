@@ -45,7 +45,7 @@ class DatabaseService:
         try:
             user_data = self.users_collection.find_one({"email": email})
             if user_data:
-                user_data["_id"] = str(user_data["_id"])  # Convert ObjectId to string
+                # Keep ObjectId as is; pydantic model is configured to accept ObjectId
                 return User(**user_data)
             return None
         except Exception as e:
@@ -99,7 +99,7 @@ class DatabaseService:
             
             users = []
             for user_data in users_data:
-                user_data["_id"] = str(user_data["_id"])
+                # Keep ObjectId type for _id
                 users.append(User(**user_data))
             return users
         except Exception as e:

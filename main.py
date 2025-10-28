@@ -6,6 +6,7 @@ from app.core.config import configurations
 from app.db.database import db_service
 from app.api.routes.auth import router as auth_router
 from app.api.routes.user_routes import router as user_router
+from app.api.routes.forgot_password import router as forgot_password_router
 from fastapi import APIRouter
 
 
@@ -41,6 +42,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(forgot_password_router)
 
 @app.get("/api/health")
 async def health():
@@ -59,7 +61,10 @@ async def root_redirect():
             "auth": {
                 "register": "/api/auth/register",
                 "confirm": "/api/auth/confirm", 
-                "login": "/api/auth/login"
+                "login": "/api/auth/login",
+                "forgot_password": "/api/auth/forgot-password",
+                "verify_otp": "/api/auth/verify-otp",
+                "reset_password": "/api/auth/reset-password"
             },
             "users": {
                 "create": "/api/users/",

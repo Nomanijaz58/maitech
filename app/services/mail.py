@@ -15,3 +15,19 @@ def send_grid_mail_send(subject, to_email, content, mime_type="plain"):
     response = sg.client.mail.send.post(request_body=mail.get())
     if int(response.status_code) != 202:
         raise Exception("send_grid_mail_send failed to send email")
+
+
+async def send_email(to_email: str, subject: str, html_content: str):
+    """
+    Send email using SendGrid
+    
+    Args:
+        to_email: Recipient email address
+        subject: Email subject
+        html_content: HTML content of the email
+    """
+    try:
+        send_grid_mail_send(subject, to_email, html_content, "html")
+        return True
+    except Exception as e:
+        raise Exception(f"Failed to send email: {str(e)}")

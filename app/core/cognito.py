@@ -73,3 +73,41 @@ def login(email: str, password: str) -> Dict[str, Any]:
         raise ValueError(f"Unexpected error during login: {str(e)}")
 
 
+def reset_password(email: str) -> Dict[str, Any]:
+    """Initiate forgot password flow in Cognito"""
+    client = _get_cognito_client()
+    try:
+        response = client.forgot_password(
+            ClientId=configurations.COGNITO_CLIENT_ID,
+            Username=email,
+        )
+        return response
+    except ClientError as e:
+        error_message = e.response.get("Error", {}).get("Message", str(e))
+        raise ValueError(f"Cognito forgot_password failed: {error_message}")
+    except Exception as e:
+        raise ValueError(f"Unexpected error during forgot_password: {str(e)}")
+
+
+def confirm_forgot_password(email: str, confirmation_code: str, new_password: str) -> Dict[str, Any]:
+    """Confirm forgot password with new password"""
+    client = _get_cognito_client()
+    try:
+        response = client.confirm_forgot_password(
+            ClientId=configurations.COGNITO_CLIENT_ID,
+            Username=email,
+            ConfirmationCode=confirmation_code,
+            Password=new_password,
+        )
+        return response
+    except ClientError as e:
+        error_message = e.response.get("Error", {}).get("Message", str(e))
+        raise ValueError(f"Cognito confirm_forgot_password failed: {error_message}")
+    except Exception as e:
+        raise ValueError(f"Unexpected error during confirm_forgot_password: {str(e)}")
+
+
+
+
+
+
