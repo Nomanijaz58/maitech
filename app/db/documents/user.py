@@ -10,16 +10,17 @@ def utc_now():
 
 
 class UserRole(str, Enum):
-    customer = "customer"
-    seller = "seller"
-    admin = "admin"
+    student = "student"
+    teacher = "teacher"
+    parent = "parent"
+    school_manager = "school_manager"
 
 
 class User(BaseModel):
     id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="_id")
     email: EmailStr
     full_name: Optional[str] = None
-    role: UserRole = Field(default=UserRole.customer)
+    role: UserRole = Field(default=UserRole.student)
     created_at: datetime = Field(default_factory=utc_now)
 
     class Config:

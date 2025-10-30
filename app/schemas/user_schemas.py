@@ -1,13 +1,22 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from app.db.documents.user import UserRole
+from typing import Optional, Literal
 
 
 class RegisterRequest(BaseModel):
     name: str = Field(min_length=1)
     email: EmailStr
     password: str = Field(min_length=8)
-    role: UserRole = UserRole.customer
+    role: Literal["student", "teacher", "parent", "school_manager"] = "student"
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "password": "TestPass123!",
+                "role": "student",
+            }
+        }
 
 
 class ConfirmUserRequest(BaseModel):

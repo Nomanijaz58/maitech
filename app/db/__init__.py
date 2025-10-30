@@ -3,7 +3,6 @@ from pymongo import AsyncMongoClient
 
 from app.core.config import configurations
 from app.db.documents.user import User
-
 DATABASE_MODELS = [User]
 
 
@@ -21,7 +20,7 @@ async def init_db():
 
     client = AsyncMongoClient(configurations.MONGODB_URL)
     await init_beanie(
-        database=client.db_name,
+        database=client.get_default_database(),
         document_models=DATABASE_MODELS,
     )
 

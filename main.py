@@ -6,7 +6,11 @@ from app.core.config import configurations
 from app.db.database import db_service
 from app.api.routes.auth import router as auth_router
 from app.api.routes.user_routes import router as user_router
-from app.api.routes.forgot_password import router as forgot_password_router
+from app.api.routes.student_api import router as student_router
+from app.api.routes.reports import router as reports_router
+from app.api.routes.class_chat import router as class_chat_router
+from app.api.routes.settings import router as settings_router
+from app.db import init_db
 from fastapi import APIRouter
 
 
@@ -14,6 +18,11 @@ from fastapi import APIRouter
 async def lifespan(app: FastAPI):
     # Connect to MongoDB using pymongo (synchronous operation)
     db_service.connect()
+    # Initialize Beanie models (async)
+    try:
+        await init_db()
+    except Exception as e:
+        print(f"Beanie init failed: {e}")
     print("Starting up")
     yield
     # Disconnect from MongoDB (synchronous operation)
@@ -42,7 +51,11 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(user_router)
-app.include_router(forgot_password_router)
+# Forgot/Reset password routes removed per requirements
+app.include_router(student_router)
+app.include_router(reports_router)
+app.include_router(class_chat_router)
+app.include_router(settings_router)
 
 @app.get("/api/health")
 async def health():
@@ -60,16 +73,19 @@ async def root_redirect():
             "docs": "/api/docs",
             "auth": {
                 "register": "/api/auth/register",
-                "confirm": "/api/auth/confirm", 
-                "login": "/api/auth/login",
-                "forgot_password": "/api/auth/forgot-password",
-                "verify_otp": "/api/auth/verify-otp",
-                "reset_password": "/api/auth/reset-password"
+                "confirm": "/api/auth/confirm"
             },
             "users": {
                 "create": "/api/users/",
                 "get_all": "/api/users/",
                 "get_by_id": "/api/users/{user_id}"
+            },
+            "student": {
+                "dashboard": "/api/student/dashboard",
+                "learning_path": "/api/student/learning-path",
+                "lessons": "/api/student/lessons",
+                "lesson_history": "/api/student/lessons/history",
+                "lesson_details": "/api/student/lessons/{lesson_id}"
             }
         }
     }

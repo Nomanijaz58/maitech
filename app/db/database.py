@@ -106,6 +106,8 @@ class DatabaseService:
             print(f"Error getting all users: {e}")
             raise  # Re-raise exception so caller knows about the failure
 
+    # Notifications helpers removed (using Beanie in routes)
+
 
 # Global database service instance
 db_service = DatabaseService()
