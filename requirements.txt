@@ -1,16 +1,17 @@
-fastapi==0.116.1
+fastapi>=0.103.0
 uvicorn==0.35.0
 gunicorn==21.2.0
 
-# Beanie ODM (pydantic v1 compatible)
-beanie==1.18.0
+# Beanie ODM (pydantic v2 compatible)
+beanie>=1.26.0
 
-# MongoDB drivers (compatible with Beanie 1.18.0)
-pymongo==4.7.2
-motor==3.3.2
+# MongoDB drivers
+pymongo>=4.7.2
+motor>=3.3.2
 
 # Validation and env management
-pydantic==1.10.14
+pydantic>=2.0
+pydantic-settings>=2.0.0
 python-dotenv==1.0.1
 python-decouple==3.8
 

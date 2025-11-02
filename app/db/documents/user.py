@@ -1,5 +1,5 @@
 from beanie import Document
-from pydantic import EmailStr, Field
+from pydantic import EmailStr, Field, ConfigDict, field_serializer
 from datetime import datetime, timezone
 from typing import Optional
 from enum import Enum
@@ -27,7 +27,12 @@ class User(Document):
     class Settings:
         name = "users"  # Collection name in MongoDB
         
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+    )
+    
+    @field_serializer('id')
+    def serialize_objectid(self, oid: ObjectId, _info) -> str:
+        """Serialize ObjectId to string"""
+        return str(oid)

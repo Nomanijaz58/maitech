@@ -7,7 +7,7 @@ All endpoints are public and do not require authentication.
 
 from fastapi import APIRouter, HTTPException, status, Query
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from bson import ObjectId
 from datetime import datetime
 
@@ -32,8 +32,12 @@ class NotificationResponse(BaseModel):
     created_at: datetime
     related_resource_id: Optional[str] = None
     
-    class Config:
-        json_encoders = {ObjectId: str, datetime: lambda v: v.isoformat()}
+    model_config = ConfigDict()
+    
+    @field_serializer('created_at')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Serialize datetime to ISO format"""
+        return dt.isoformat()
 
 
 class NotificationListResponse(BaseModel):

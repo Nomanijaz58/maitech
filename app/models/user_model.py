@@ -6,7 +6,7 @@ Pydantic is used for schema definition, validation, and serialization.
 All actual database operations are performed using PyMongo client.
 """
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_serializer
 from typing import Optional
 from enum import Enum
 from datetime import datetime, timezone
@@ -36,13 +36,15 @@ class User(BaseModel):
     role: UserRole = Field(default=UserRole.customer, description="User's role")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
-    class Config:
-        """Pydantic configuration."""
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+    model_config = ConfigDict(
         # Allow field name aliases
-        allow_population_by_field_name = True
+        populate_by_name=True,
+    )
+    
+    @field_serializer('created_at')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Serialize datetime to ISO format"""
+        return dt.isoformat()
 
 
 class UserCreate(BaseModel):
@@ -60,7 +62,9 @@ class UserResponse(BaseModel):
     role: UserRole
     created_at: datetime
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+    model_config = ConfigDict()
+    
+    @field_serializer('created_at')
+    def serialize_datetime(self, dt: datetime, _info) -> str:
+        """Serialize datetime to ISO format"""
+        return dt.isoformat()

@@ -1,5 +1,6 @@
 from decouple import config
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 
 
 class Settings(BaseSettings):
@@ -28,8 +29,7 @@ class Settings(BaseSettings):
     # S3_SECRET_ACCESS_KEY: str = config("S3_SECRET_ACCESS_KEY")
     # S3_BUCKET_NAME: str = config("S3_BUCKET_NAME")
 
-    class Config:
-        extra = "ignore"
+    model_config = ConfigDict(extra="ignore")
 
     def validate_required(self) -> None:
         missing = []

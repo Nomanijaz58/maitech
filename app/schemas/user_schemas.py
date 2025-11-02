@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional, Literal
 
 
@@ -8,8 +8,8 @@ class RegisterRequest(BaseModel):
     password: str = Field(min_length=8)
     role: Literal["student", "teacher", "parent", "school_manager"] = "student"
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "John Doe",
                 "email": "john.doe@example.com",
@@ -17,6 +17,7 @@ class RegisterRequest(BaseModel):
                 "role": "student",
             }
         }
+    )
 
 
 class ConfirmUserRequest(BaseModel):
