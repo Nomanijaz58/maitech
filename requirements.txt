@@ -4,6 +4,7 @@ gunicorn==21.2.0
 
 # Beanie ODM (pydantic v2 compatible)
 beanie>=1.26.0
+email-validator==2.1.0.post1
 
 # MongoDB drivers
 pymongo>=4.7.2
