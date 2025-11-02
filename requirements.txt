@@ -1,5 +1,6 @@
 fastapi==0.116.1
 uvicorn==0.35.0
+gunicorn==21.2.0
 
 # Beanie ODM (pydantic v1 compatible)
 beanie==1.18.0

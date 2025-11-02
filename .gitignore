@@ -123,7 +123,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -166,7 +165,7 @@ cython_debug/
 .vscode/
 
 # Environment files with credentials - DO NOT COMMIT
-.env
 .env.backup
 *.env
 !.env.example
+!.env
