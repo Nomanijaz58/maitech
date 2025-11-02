@@ -164,4 +164,9 @@ cython_debug/
 
 # Visual Studio Code
 .vscode/
+
+# Environment files with credentials - DO NOT COMMIT
+.env
 .env.backup
+*.env
+!.env.example
