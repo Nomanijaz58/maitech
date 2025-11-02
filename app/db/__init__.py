@@ -1,31 +1,3 @@
-from beanie import init_beanie
-from pymongo import AsyncMongoClient
-
-from app.core.config import configurations
-from app.db.documents.user import User
-DATABASE_MODELS = [User]
-
-
-async def init_db():
-    """
-    Initializes the database connection and sets up Beanie ODM.
-
-    This function connects to the MongoDB instance via the MongoDB URL specified
-    in the settings and initializes Beanie with the provided database models. It
-    is intended to be used in an asynchronous context. This setup is essential for
-    working with the defined database models using Beanie.
-
-    :return: None
-    """
-
-    client = AsyncMongoClient(configurations.MONGODB_URL)
-    await init_beanie(
-        database=client.get_default_database(),
-        document_models=DATABASE_MODELS,
-    )
-
-    for model in DATABASE_MODELS:
-        try:
-            model.model_rebuild()
-        except Exception:
-            pass
+# Database initialization is now in app/db/init_db.py
+# Import from there to avoid duplication
+from app.db.init_db import init_db, DATABASE_MODELS

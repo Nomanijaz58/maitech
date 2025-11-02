@@ -3,31 +3,29 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import configurations
-from app.db.database import db_service
 from app.api.routes.auth import router as auth_router
 from app.api.routes.user_routes import router as user_router
 from app.api.routes.student_api import router as student_router
 from app.api.routes.reports import router as reports_router
 from app.api.routes.class_chat import router as class_chat_router
 from app.api.routes.settings import router as settings_router
-from app.db import init_db
-from fastapi import APIRouter
+from app.api.routes.teacher import teacher_router
+from app.api.v1.routes.notifications import router as notifications_router
+from app.db.init_db import init_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connect to MongoDB using pymongo (synchronous operation)
-    db_service.connect()
-    # Initialize Beanie models (async)
+    # Initialize Beanie ODM with AsyncMongoClient
     try:
         await init_db()
+        print("✅ Beanie ODM initialized successfully")
     except Exception as e:
-        print(f"Beanie init failed: {e}")
-    print("Starting up")
+        print(f"❌ Beanie init failed: {e}")
+        raise
+    print("🚀 Starting up MaiTech API")
     yield
-    # Disconnect from MongoDB (synchronous operation)
-    db_service.disconnect()
-    print("Shutting down")
+    print("🛑 Shutting down")
 
 
 app = FastAPI(
@@ -56,10 +54,26 @@ app.include_router(student_router)
 app.include_router(reports_router)
 app.include_router(class_chat_router)
 app.include_router(settings_router)
+app.include_router(teacher_router)
+app.include_router(notifications_router)
 
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/api/ping-db")
+async def ping_db():
+    """
+    Test database connection using Beanie.
+    Returns user count to verify connection is working.
+    """
+    from app.db.documents.user import User
+    try:
+        count = await User.find_all().count()
+        return {"status": "connected", "users_in_db": count, "message": "Database connection successful"}
+    except Exception as e:
+        return {"status": "error", "message": f"Database connection failed: {str(e)}"}
 
 
 @app.get("/")

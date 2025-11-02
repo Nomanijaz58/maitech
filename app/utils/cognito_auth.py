@@ -12,6 +12,11 @@ security = HTTPBearer()
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
     """
+    DEPRECATED: Use app.utils.auth.get_current_user instead.
+    
+    This function only returns token information. The recommended approach is to use
+    app.utils.auth.get_current_user which fetches the full User document from MongoDB.
+    
     Validate JWT token and return current user information
     
     Args:

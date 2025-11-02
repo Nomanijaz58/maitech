@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+from beanie import Document
+from pydantic import EmailStr, Field
 from datetime import datetime, timezone
 from typing import Optional
 from enum import Enum
@@ -16,13 +17,16 @@ class UserRole(str, Enum):
     school_manager = "school_manager"
 
 
-class User(BaseModel):
+class User(Document):
     id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="_id")
     email: EmailStr
     full_name: Optional[str] = None
     role: UserRole = Field(default=UserRole.student)
     created_at: datetime = Field(default_factory=utc_now)
 
+    class Settings:
+        name = "users"  # Collection name in MongoDB
+        
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
